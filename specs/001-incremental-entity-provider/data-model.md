@@ -445,6 +445,45 @@ interface BackstageEntity {
     };
   }>;
 }
+
+**Provider requirements (annotations and stable names)**:
+
+- Providers MUST set the following annotations on every produced Backstage entity:
+  - `backstage.io/managed-by-location` (ANNOATION_LOCATION): a URL or VCS path
+    that points to the authoritative source in the upstream system (e.g.
+    OpenChoreo resource path).
+  - `backstage.io/managed-by-origin-location` (ANNOATION_ORIGIN_LOCATION): a
+    short identifier describing the origin (for operator visibility).
+
+- Providers SHOULD ensure `metadata.name` is stable across runs. Prefer
+  using a deterministic name derived from the upstream entity's stable ID
+  (for example: `openchoreo-component-${entity.id}`). Avoid ephemeral names
+  that include timestamps or UUIDs.
+
+Example entity generation (short snippet):
+
+```typescript
+function toBackstageEntity(raw: OpenChoreoRawEntity): BackstageEntity {
+  const name = `openchoreo-${raw.type}-${raw.id}`; // stable deterministic name
+
+  return {
+    apiVersion: 'backstage.io/v1beta1',
+    kind: raw.type === 'component' ? 'Component' : 'System',
+    metadata: {
+      name,
+      description: raw.description,
+      annotations: {
+        'backstage.io/managed-by-location': `https://openchoreo.example.com/${raw.type}s/${raw.id}`,
+        'backstage.io/managed-by-origin-location': 'openchoreo',
+      },
+      labels: {
+        'openchoreo/id': raw.id,
+      },
+    },
+    // spec and other fields omitted for brevity
+  } as BackstageEntity;
+}
+```
 ```
 
 **Validation Rules**:

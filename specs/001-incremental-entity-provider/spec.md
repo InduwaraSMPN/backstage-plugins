@@ -156,7 +156,7 @@ The following sections provide a comprehensive A�Z implementation plan for ena
 
 #### A) Pagination / Cursor Management
 - **Design**: Implement native API pagination with cursor-based tracking
-- **Cursor Structure**: Simplified JSON-serializable object containing essential state information:
+- **Cursor Structure**: JSON-serializable object containing essential state information:
   - `lastOrganizationId`: Last processed organization identifier
   - `lastProjectId`: Last processed project identifier within organization
   - `lastComponentId`: Last processed component identifier within project
@@ -209,7 +209,7 @@ plugins/catalog-incremental-ingestion-backend-module-openchoreo/
       module.ts                   # Backend module registration
       provider/
          OpenChoreoIncrementalEntityProvider.ts  # Main provider implementation
-         CursorManager.ts        # Simplified cursor management
+         CursorManager.ts        # cursor management
          EntityIterator.ts       # Entity processing and pagination
          OpenChoreoApiClientContext.ts # Stateless API client context
          types.ts                # Type definitions
@@ -269,9 +269,9 @@ plugins/catalog-incremental-ingestion-backend-module-openchoreo/
 
 **Phase 1: Basic Incremental Provider (Weeks 1-2)**
 - **Task 1.1**: Create incremental provider interface skeleton
-- **Task 1.2**: Implement simplified cursor management
+- **Task 1.2**: Implement cursor management
 - **Task 1.3**: Create stateless API client context
-- **Task 1.4**: Develop simplified configuration schema
+- **Task 1.4**: Develop configuration schema
 
 **Phase 2: Core Functionality (Weeks 3-4)**
 - **Task 2.1**: Implement entity iterator with native pagination support
@@ -294,7 +294,7 @@ plugins/catalog-incremental-ingestion-backend-module-openchoreo/
 - **Phase 3**: 2 weeks (Integration & Monitoring)
 - **Phase 4**: 2 weeks (Documentation & Release)
 
-**Note**: The implementation plan has been simplified to focus on core functionality first. Advanced features like comprehensive testing, performance optimization, and complex migration tools will be added in future iterations based on real-world usage.
+**Note**: The implementation plan has been to focus on core functionality first. Advanced features like comprehensive testing, performance optimization, and complex migration tools will be added in future iterations based on real-world usage.
 
 ### 6. Backward Compatibility & Future-Proofing
 
@@ -320,19 +320,24 @@ plugins/catalog-incremental-ingestion-backend-module-openchoreo/
 
 #### External Dependencies
 - **Backstage Version**: Requires `@backstage/plugin-catalog-backend-module-incremental-ingestion` v1.9.0+
-- **OpenChoreo API**: Future pagination support timeline and implementation details [NEEDS CLARIFICATION: What is the timeline for OpenChoreo API pagination?]
+- **OpenChoreo API**: Native pagination support implementation timeline (November 4, 2025)
+  - **Analysis & Design**: September 17 - September 30, 2025 (2 weeks)
+  - **Implementation**: October 1 - October 21, 2025 (3 weeks)
+  - **Testing**: October 22 - October 28, 2025 (1 week)
+  - **Documentation**: October 29 - November 4, 2025 (1 week)
+  - **Total Duration**: 7 weeks
 - **Database Requirements**: Additional storage for cursor and mark data (Postgres recommended)
 - **Monitoring**: Integration with existing Backstage monitoring systems
 
 #### Risk Assessment
-- **High Risk**: OpenChoreo API pagination timeline uncertainty
+- **Medium Risk**: OpenChoreo API pagination implementation timeline (November 4, 2025)
 - **Medium Risk**: Performance impact of fallback pagination mechanism
 - **Medium Risk**: Data consistency during migration from traditional to incremental provider
 - **Low Risk**: Backward compatibility issues with existing configurations
 - **Low Risk**: Memory usage with large cursor datasets
 
 #### Mitigation Strategies
-- **API Uncertainty**: Implement robust fallback mechanisms and clear documentation
+- **API Timeline**: Concrete implementation timeline established (November 4, 2025) with phased development approach
 - **Performance**: Implement efficient cursor serialization and storage strategies
 - **Data Consistency**: Provide rollback procedures and validation tools
 - **Compatibility**: Comprehensive testing with existing configurations
@@ -373,6 +378,6 @@ openchoreo:
     timeout: 300s
 ```
 
-**Note**: The configuration schema has been simplified to essential options only. Advanced options like encryption, compression, and complex fallback mechanisms have been removed for the initial implementation.
+**Note**: The configuration schema has been to essential options only. Advanced options like encryption, compression, and complex fallback mechanisms have been removed for the initial implementation.
 
 This comprehensive implementation plan provides a clear roadmap for enabling incremental entity provider capabilities for the OpenChoreo integration, addressing current limitations while preparing for future API enhancements.

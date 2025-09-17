@@ -1,7 +1,7 @@
 /**
  * Cursor Management Contract
  * 
- * This contract defines the simplified interface for cursor management in the OpenChoreo
+ * This contract defines the interface for cursor management in the OpenChoreo
  * Incremental Entity Provider, including creation, validation, serialization,
  * and persistence of cursor data.
  * 
@@ -16,7 +16,7 @@ import {
 } from './incremental-entity-provider';
 
 /**
- * Note: This contract has been simplified to focus on essential functionality.
+ * Note: This contract has been to focus on essential functionality.
  * Advanced features like cursor backup, recovery, and comprehensive metrics
  * have been removed for the initial implementation.
  */
@@ -98,7 +98,7 @@ export interface CursorError {
 /**
  * Cursor Manager Configuration Interface
  * 
- * Simplified configuration for the cursor manager behavior
+ * configuration for the cursor manager behavior
  */
 export interface CursorManagerConfig {
   /**
@@ -111,6 +111,37 @@ export interface CursorManagerConfig {
    */
   cursorExpiration?: number;
 }
+
+/**
+ * CursorManager responsibilities
+ *
+ * The CursorManager is the authoritative component for cursor lifecycle
+ * management. Implementations MUST provide the following capabilities:
+ *
+ * - Persistent storage/retrieval of cursor data (via CursorStorage).
+ * - Enforce `maxCursorSize` and refuse to persist oversized cursors unless a
+ *   server-side pointer (cursorRef) is used. When the cursor payload would
+ *   exceed `maxCursorSize`, the CursorManager MUST store the full payload in
+ *   server-side storage and return a small `cursorRef` token to be persisted
+ *   in the engine marks table instead.
+ * - Maintain a configurable backup history of the last N cursor backups. The
+ *   CursorBackupManager interface exists for this purpose; CursorManager
+ *   implementations MUST integrate with it and keep at least 3 backups by
+ *   default.
+ * - Provide validation, integrity checks, and a documented `repair` path. The
+ *   CursorRecoveryManager APIs are required and MUST be implemented so that
+ *   operators can recover from corrupted or incompatible cursors without
+ *   manual SQL edits.
+ * - Emit CursorEvents for create/update/validate/load/delete/error to allow
+ *   integration with observability and alerting systems.
+ *
+ * Unit tests required:
+ * - Serialization/deserialize roundtrip tests.
+ * - Oversize-cursor handling and cursorRef behavior tests.
+ * - Backup rotation tests (verify N backups kept).
+ * - Recovery/repair path tests (simulate corrupted cursor and verify repair
+ *   result).
+ */
 
 /**
  * Cursor Storage Interface

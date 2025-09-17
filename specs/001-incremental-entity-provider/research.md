@@ -46,7 +46,7 @@ This approach:
 
 3. **Native Pagination Implementation (Selected)**:
    - **Advantages**: True incremental processing with no memory overhead
-   - **Advantages**: Simplified implementation and maintenance
+   - **Advantages**: implementation and maintenance
    - **Advantages**: Better performance and scalability
    - **Advantages**: Aligns with modern API design principles
 
@@ -96,7 +96,7 @@ Key requirements identified:
 
 ## 3. JSON Serialization Strategy for Cursor Data
 
-### Decision: Simplified JSON Schema with Essential State
+### Decision: JSON Schema with Essential State
 - **Schema Versioning**: Include version field for backward compatibility
 - **Size Limitation**: Implement cursor size limits (recommended: 1KB max)
 - **Validation**: Runtime validation of essential cursor structure
@@ -242,7 +242,7 @@ Optimization strategies:
 
 ## 6. Configuration Schema Design
 
-### Decision: Simplified Configuration with Essential Options
+### Decision: Configuration with Essential Options
 - **Schema**: TypeScript interfaces with runtime validation
 - **Defaults**: Sensible defaults for essential configuration options
 - **Validation**: Basic validation with clear error messages
@@ -395,13 +395,13 @@ Monitoring aspects:
 
 All NEEDS CLARIFICATION items from the feature specification have been resolved through technical research:
 
-1. **OpenChoreo API Pagination**: Native pagination implementation with new paginated API methods
+1. **OpenChoreo API Pagination**: Native pagination implementation with new paginated API methods (timeline: November 4, 2025)
 2. **Backstage Integration**: Use `@backstage/plugin-catalog-backend-module-incremental-ingestion`
-3. **JSON Serialization**: Simplified JSON schema with essential state information only
+3. **JSON Serialization**: JSON schema with essential state information only
 4. **Error Handling**: Exponential backoff with circuit breaker
 5. **Performance**: Basic batch processing with configurable batch sizes
-6. **Configuration**: Simplified configuration with essential options only
+6. **Configuration**: configuration with essential options only
 7. **Testing**: Basic testing approach focusing on core functionality
 8. **Monitoring**: Integrated observability with Backstage
 
-These decisions provide a solid foundation for implementing the OpenChoreo Incremental Entity Provider while meeting all functional requirements and technical constraints. The approach has been simplified based on user feedback to focus on core functionality first, with advanced features to be added in future iterations.
+These decisions provide a solid foundation for implementing the OpenChoreo Incremental Entity Provider while meeting all functional requirements and technical constraints. The approach has been based on user feedback to focus on core functionality first, with advanced features to be added in future iterations.

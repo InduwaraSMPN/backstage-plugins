@@ -67,53 +67,53 @@ Tasks are generated from:
 
 ---
 
-### Task 1.2: Implement Simplified Configuration Schema
+### Task 1.2: Implement Configuration Schema
 **Priority**: High  
 **Estimated Time**: 2 hours  
 **Dependencies**: Task 1.1
 
-**Description**: Implement the simplified configuration schema based on the updated `OpenChoreoIncrementalConfig` interface.
+**Description**: Implement the configuration schema based on the updated `OpenChoreoIncrementalConfig` interface.
 
 **Acceptance Criteria**:
-- [ ] Simplified configuration schema implemented
+- [ ] configuration schema implemented
 - [ ] Basic validation functions working
 - [ ] Default values properly configured
 - [ ] Configuration tests passing
 
 **Implementation Steps**:
-1. Create `src/config/config.d.ts` with simplified schema definition
+1. Create `src/config/config.d.ts` with schema definition
 2. Create `src/config/defaultConfig.ts` with defaults
 3. Implement basic validation functions
 4. Write tests for configuration validation
 
-**Output**: Simplified configuration system
+**Output**: configuration system
 
-**Note**: The configuration has been simplified to essential options only. Advanced options like encryption, compression, and complex fallback mechanisms have been removed for the initial implementation.
+**Note**: The configuration has been to essential options only. Advanced options like encryption, compression, and complex fallback mechanisms have been removed for the initial implementation.
 
 ---
 
-### Task 1.3: Create Simplified Type Definitions [P]
+### Task 1.3: Create Type Definitions [P]
 **Priority**: High  
 **Estimated Time**: 2 hours  
 **Dependencies**: Task 1.1
 
-**Description**: Create TypeScript type definitions and interfaces based on the simplified data models and API contracts.
+**Description**: Create TypeScript type definitions and interfaces based on the data models and API contracts.
 
 **Acceptance Criteria**:
-- [ ] Simplified data model interfaces implemented
-- [ ] Simplified contract interfaces implemented
+- [ ] data model interfaces implemented
+- [ ] contract interfaces implemented
 - [ ] Type exports organized and accessible
 - [ ] No type errors in compilation
 
 **Implementation Steps**:
 1. Create `src/provider/types.ts` with core types
-2. Implement simplified entity data types
-3. Implement simplified configuration types
+2. Implement entity data types
+3. Implement configuration types
 4. Organize exports for easy import
 
-**Output**: Simplified type definitions for the module
+**Output**: type definitions for the module
 
-**Note**: The type definitions have been simplified to focus on essential functionality. Complex types related to fallback pagination and advanced configuration options have been removed.
+**Note**: The type definitions have been to focus on essential functionality. Complex types related to fallback pagination and advanced configuration options have been removed.
 
 ---
 
@@ -138,7 +138,7 @@ Tasks are generated from:
 
 **Output**: Basic testing infrastructure
 
-**Note**: The testing infrastructure has been simplified to focus on core functionality. Advanced testing features will be added in future iterations based on real-world usage.
+**Note**: The testing infrastructure has been to focus on core functionality. Advanced testing features will be added in future iterations based on real-world usage.
 
 ---
 
@@ -170,17 +170,29 @@ Tasks are generated from:
 
 **Note**: Fallback pagination has been removed entirely. We will focus on implementing native pagination with the new paginated API methods.
 
+**External dependency (required)**: Coordinate with the OpenChoreo API team to ensure the following paginated endpoints are available and stable:
+
+- `GET /organizations?cursor=...` (returns items + nextCursor)
+- `GET /projects?cursor=...`
+- `GET /components?cursor=...`
+
+Acceptance criteria for pagination API change:
+
+- If OpenChoreo provides native opaque pagination tokens (e.g. `nextCursor`), the provider MUST use them and persist only the token inside the cursor (see cursor contract).
+- If OpenChoreo does NOT provide native pagination endpoints, the implementer MUST provide a documented fallback (e.g., server-side cursorRef storage and indexed resume GUIDs) and include a performance comparison that quantifies difference vs native pagination (expected extra DB reads, memory, and max latency).
+
+
 ---
 
-### Task 2.2: Implement Simplified Cursor Manager [P]
+### Task 2.2: Implement Cursor Manager [P]
 **Priority**: High  
 **Estimated Time**: 3 hours  
 **Dependencies**: Task 1.2, Task 1.3, Task 1.4
 
-**Description**: Implement the simplified cursor management system for tracking pagination state across ingestion cycles.
+**Description**: Implement the cursor management system for tracking pagination state across ingestion cycles.
 
 **Acceptance Criteria**:
-- [ ] Cursor manager implements simplified CursorManager interface
+- [ ] Cursor manager implements CursorManager interface
 - [ ] JSON serialization working correctly
 - [ ] Basic cursor validation implemented
 - [ ] Cursor storage and retrieval working
@@ -188,14 +200,14 @@ Tasks are generated from:
 
 **Implementation Steps**:
 1. Create `src/provider/CursorManager.ts`
-2. Implement simplified cursor creation and validation
+2. Implement cursor creation and validation
 3. Implement JSON serialization utilities
 4. Implement cursor storage (database interface)
 5. Write tests
 
-**Output**: Simplified cursor management system
+**Output**: cursor management system
 
-**Note**: The cursor management system has been simplified to essential state information only. Complex features like cursor recovery and repair logic have been removed for the initial implementation.
+**Note**: The cursor management system has been to essential state information only. Complex features like cursor recovery and repair logic have been removed for the initial implementation.
 
 ---
 
@@ -220,7 +232,7 @@ Tasks are generated from:
 
 **Output**: Entity processing system
 
-**Note**: The entity processing logic has been simplified to focus on core functionality. Advanced features like comprehensive validation will be added in future iterations.
+**Note**: The entity processing logic has been to focus on core functionality. Advanced features like comprehensive validation will be added in future iterations.
 
 ---
 
@@ -246,7 +258,7 @@ Tasks are generated from:
 
 **Output**: Entity iteration system
 
-**Note**: The entity iterator has been simplified to focus on core functionality. Advanced features like configurable burst timing will be added in future iterations.
+**Note**: The entity iterator has been to focus on core functionality. Advanced features like configurable burst timing will be added in future iterations.
 
 ---
 
@@ -276,7 +288,7 @@ Tasks are generated from:
 
 **Output**: Core incremental entity provider implementation
 
-**Note**: The implementation has been simplified to focus on core functionality. Advanced features like comprehensive state management will be added in future iterations.
+**Note**: The implementation has been to focus on core functionality. Advanced features like comprehensive state management will be added in future iterations.
 
 ---
 
@@ -299,7 +311,7 @@ Tasks are generated from:
 
 **Output**: Basic monitoring and health system
 
-**Note**: The monitoring system has been simplified to focus on core functionality. Advanced features like comprehensive metrics collection will be added in future iterations.
+**Note**: The monitoring system has been to focus on core functionality. Advanced features like comprehensive metrics collection will be added in future iterations.
 
 ---
 
@@ -322,7 +334,7 @@ Tasks are generated from:
 
 **Output**: Basic error handling system
 
-**Note**: The error handling system has been simplified to focus on core functionality. Advanced features like comprehensive recovery mechanisms and graceful degradation will be added in future iterations.
+**Note**: The error handling system has been to focus on core functionality. Advanced features like comprehensive recovery mechanisms and graceful degradation will be added in future iterations.
 
 ---
 
@@ -331,7 +343,7 @@ Tasks are generated from:
 **Estimated Time**: 1 hour  
 **Dependencies**: Task 1.2, Task 3.1
 
-**Description**: Integrate the simplified configuration system with the provider.
+**Description**: Integrate the configuration system with the provider.
 
 **Acceptance Criteria**:
 - [ ] Configuration integration working
@@ -343,7 +355,7 @@ Tasks are generated from:
 
 **Output**: Configuration integration
 
-**Note**: The configuration integration has been simplified to focus on core functionality. Advanced features like runtime configuration changes will be added in future iterations.
+**Note**: The configuration integration has been to focus on core functionality. Advanced features like runtime configuration changes will be added in future iterations.
 
 ---
 
@@ -370,7 +382,7 @@ Tasks are generated from:
 
 **Output**: Backend module registration
 
-**Note**: The backend module registration has been simplified to focus on core functionality. Advanced features will be added in future iterations.
+**Note**: The backend module registration has been to focus on core functionality. Advanced features will be added in future iterations.
 
 ---
 
@@ -391,7 +403,7 @@ Tasks are generated from:
 
 **Output**: Basic administrative interface
 
-**Note**: The administrative endpoints have been simplified to focus on core functionality. Advanced features will be added in future iterations.
+**Note**: The administrative endpoints have been to focus on core functionality. Advanced features will be added in future iterations.
 
 ---
 
@@ -431,7 +443,7 @@ Tasks are generated from:
 
 **Output**: Basic documentation
 
-**Note**: The documentation has been simplified to focus on core functionality. Advanced documentation features will be added in future iterations.
+**Note**: The documentation has been to focus on core functionality. Advanced documentation features will be added in future iterations.
 
 ---
 
@@ -457,7 +469,7 @@ Tasks are generated from:
 
 **Output**: Basic unit test suite
 
-**Note**: The testing has been simplified to focus on core functionality. Advanced testing features like comprehensive edge case coverage will be added in future iterations.
+**Note**: The testing has been to focus on core functionality. Advanced testing features like comprehensive edge case coverage will be added in future iterations.
 
 ---
 
@@ -479,7 +491,7 @@ Tasks are generated from:
 
 **Output**: Basic integration test suite
 
-**Note**: The integration tests have been simplified to focus on core functionality. Advanced testing scenarios will be added in future iterations.
+**Note**: The integration tests have been to focus on core functionality. Advanced testing scenarios will be added in future iterations.
 
 ---
 
@@ -500,7 +512,7 @@ Tasks are generated from:
 
 **Output**: Basic contract test suite
 
-**Note**: The contract tests have been simplified to focus on core functionality. Advanced contract testing will be added in future iterations.
+**Note**: The contract tests have been to focus on core functionality. Advanced contract testing will be added in future iterations.
 
 ---
 
@@ -522,7 +534,7 @@ Tasks are generated from:
 
 **Output**: Basic performance test results
 
-**Note**: The performance testing has been simplified to focus on core functionality. Advanced performance testing will be added in future iterations.
+**Note**: The performance testing has been to focus on core functionality. Advanced performance testing will be added in future iterations.
 
 ---
 
@@ -545,7 +557,7 @@ Tasks are generated from:
 
 **Output**: Stable implementation
 
-**Note**: The finalization process has been simplified to focus on core functionality. Advanced optimizations will be added in future iterations.
+**Note**: The finalization process has been to focus on core functionality. Advanced optimizations will be added in future iterations.
 
 ---
 
@@ -566,7 +578,7 @@ Tasks are generated from:
 
 **Output**: Release-ready package
 
-**Note**: The release process has been simplified to focus on core functionality. Advanced release features will be added in future iterations.
+**Note**: The release process has been to focus on core functionality. Advanced release features will be added in future iterations.
 
 ---
 
@@ -585,7 +597,7 @@ Tasks are generated from:
 
 **Output**: Basic deployment documentation
 
-**Note**: The deployment guide has been simplified to focus on core functionality. Advanced deployment features will be added in future iterations.
+**Note**: The deployment guide has been to focus on core functionality. Advanced deployment features will be added in future iterations.
 
 ---
 
@@ -607,7 +619,7 @@ Tasks are generated from:
 
 **Output**: Production-ready implementation
 
-**Note**: The final validation has been simplified to focus on core functionality. Advanced validation features will be added in future iterations.
+**Note**: The final validation has been to focus on core functionality. Advanced validation features will be added in future iterations.
 
 ---
 
@@ -637,7 +649,7 @@ The implementation is considered complete when:
 - [ ] Core tests are passing
 - [ ] Module is ready for production deployment
 
-**Note**: The success criteria have been simplified to focus on core functionality. Advanced criteria will be added in future iterations.
+**Note**: The success criteria have been to focus on core functionality. Advanced criteria will be added in future iterations.
 
 ## Risk Mitigation
 

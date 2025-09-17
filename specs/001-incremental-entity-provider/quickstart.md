@@ -125,7 +125,7 @@ OPENCHOREO_API_URL=https://api.openchoreo.example.com
 OPENCHOREO_TOKEN=your-api-token-here
 ```
 
-**Note**: The configuration has been simplified to essential options only. Advanced options like encryption, compression, and complex fallback mechanisms have been removed for the initial implementation.
+**Note**: The configuration has been to essential options only. Advanced options like encryption, compression, and complex fallback mechanisms have been removed for the initial implementation.
 
 ### 2.4 Database Configuration
 
@@ -289,7 +289,7 @@ catalog:
         timeout: 30s
 ```
 
-**Note**: The configuration has been simplified to essential options only. Advanced options like encryption, compression, and complex fallback mechanisms have been removed for the initial implementation.
+**Note**: The configuration has been to essential options only. Advanced options like encryption, compression, and complex fallback mechanisms have been removed for the initial implementation.
 
 ---
 
@@ -326,6 +326,26 @@ curl http://localhost:7007/metrics | grep 'openchoreo_incremental_'
 - `openchoreo_incremental_errors_total`
 - `openchoreo_incremental_retries_total`
 - `openchoreo_incremental_active_connections`
+
+Recommended metric labels (where applicable):
+
+- `provider_id` — provider identifier (e.g. `openchoreo-incremental`)
+- `entity_type` — `organization|project|component`
+- `status` — `success|failure|skipped`
+- `burst_id` — unique id for the burst invocation
+
+Prometheus alert example (no entities added for N cycles):
+
+```yaml
+- alert: OpenChoreoNoEntitiesAdded
+  expr: increase(openchoreo_incremental_entities_processed_total{provider_id="openchoreo-incremental"}[6h]) == 0
+  for: 6h
+  labels:
+    severity: warning
+  annotations:
+    summary: "OpenChoreo provider added zero entities in the last 6 hours"
+    description: "Investigate OpenChoreo API connectivity or provider configuration."
+```
 
 ### 6.4 Alerting Setup
 
@@ -406,6 +426,30 @@ logging:
 # View debug logs
 yarn start-backend 2>&1 | grep -i "debug.*openchoreo\|debug.*incremental"
 ```
+
+## Admin Endpoints (exact paths & permissions)
+
+The incremental ingestion engine exposes the following administrative REST endpoints under the catalog backend. These endpoints require an operator or service account with elevated privileges (in Backstage this is typically `system.admin` or a service principal granted `catalog:read` and `catalog:write` scopes).
+
+| Method | Path |
+| ------ | ---- |
+| GET    | `/api/catalog/incremental/health` |
+| GET    | `/api/catalog/incremental/providers` |
+| GET    | `/api/catalog/incremental/providers/:provider` |
+| POST   | `/api/catalog/incremental/providers/:provider/trigger` |
+| POST   | `/api/catalog/incremental/providers/:provider/start` |
+| POST   | `/api/catalog/incremental/providers/:provider/cancel` |
+| DELETE | `/api/catalog/incremental/providers/:provider` |
+| GET    | `/api/catalog/incremental/providers/:provider/marks` |
+| DELETE | `/api/catalog/incremental/providers/:provider/marks` |
+| POST   | `/api/catalog/incremental/cleanup` |
+
+Required permissions:
+
+- `catalog:read` — to list and inspect provider status and marks
+- `catalog:write` — to trigger, start, cancel, or delete provider records
+
+Operators should secure these endpoints using gateway authentication and RBAC in production.
 
 ### 7.3 Health Checks
 

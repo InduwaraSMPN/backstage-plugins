@@ -77,7 +77,7 @@ plugins/catalog-incremental-ingestion-backend-module-openchoreo/
 │   ├── module.ts                   # Backend module registration
 │   ├── provider/
 │   │   ├── OpenChoreoIncrementalEntityProvider.ts  # Main provider
-│   │   ├── CursorManager.ts        # Simplified cursor management
+│   │   ├── CursorManager.ts        # cursor management
 │   │   ├── EntityIterator.ts       # Entity processing and pagination
 │   │   └── types.ts                # Type definitions
 │   ├── config/
@@ -145,7 +145,7 @@ plugins/catalog-incremental-ingestion-backend-module-openchoreo/
 
 **Output**: data-model.md, /contracts/*, failing tests, quickstart.md, CLAUDE.md
 
-**Note**: The design has been simplified to focus on core functionality. Advanced features like comprehensive testing, performance optimization, and complex migration tools will be added in future iterations based on real-world usage.
+**Note**: The design has been to focus on core functionality. Advanced features like comprehensive testing, performance optimization, and complex migration tools will be added in future iterations based on real-world usage.
 
 ## Phase 2: Task Planning Approach
 *This section describes what the /tasks command will do - DO NOT execute during /plan*
@@ -167,7 +167,7 @@ plugins/catalog-incremental-ingestion-backend-module-openchoreo/
 
 **IMPORTANT**: This phase is executed by the /tasks command, NOT by /plan
 
-**Note**: The task generation has been simplified to focus on core functionality. The reduced number of tasks reflects the removal of fallback pagination and simplification of configuration and cursor management.
+**Note**: The task generation has been to focus on core functionality. The reduced number of tasks reflects the removal of fallback pagination and simplification of configuration and cursor management.
 
 ## Phase 3+: Future Implementation
 *These phases are beyond the scope of the /plan command*

@@ -19,7 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 /**
  * OpenChoreo Specific Cursor Interface
  *
- * Defines the simplified cursor structure for tracking pagination state across ingestions
+ * Defines the cursor structure for tracking pagination state across ingestions
  */
 export interface OpenChoreoCursor {
   /**
@@ -41,6 +41,24 @@ export interface OpenChoreoCursor {
     lastComponentId?: string;
   };
 }
+
+/**
+ * Cursor storage and serialization guarantees
+ *
+ * NOTE: Engine implementations persist cursors as UTF-8 strings into the
+ * ingestion marks table. To avoid database issues and excessive storage
+ * consumption, providers MUST ensure the cursor follows these constraints:
+ *
+ * - Cursor MUST be JSON-serializable.
+ * - The serialized cursor MUST be a UTF-8 string and its byte-length MUST be
+ *   less than or equal to 2048 bytes (2 KiB) unless a server-side pointer is
+ *   used via the CursorManager (see `cursor-management.ts`).
+ * - Cursor MUST include a `version` string (e.g. '1.0').
+ * - When the upstream API provides an opaque pagination token (commonly
+ *   named `nextCursor`, `nextToken`, or similar), the cursor SHOULD contain a
+ *   single field carrying that opaque token (e.g. `nextCursorToken`). Do not
+ *   embed large lists of entity IDs inside the persisted cursor.
+ */
 
 /**
  * OpenChoreo Context for Stateless Client Construction
@@ -103,6 +121,21 @@ export interface OpenChoreoIncrementalEntityProvider
    */
   getProcessor(): EntityProcessor;
 }
+
+/**
+ * around(burst) expectations
+ *
+ * Implementations MUST treat each `around(burst)` invocation as an isolated
+ * execution context. In particular:
+ *
+ * - Providers MUST construct and use a fresh API client and context for each
+ *   `around(burst)` call. Re-using long-lived, in-memory clients or caches
+ *   across bursts is NOT permitted because the engine may run bursts in
+ *   different processes or after long pauses; clients must be reconstructed
+ *   from the provided `OpenChoreoContext`.
+ * - Any per-burst caches SHOULD be local to the `around` invocation and
+ *   discarded when `around` completes.
+ */
 
 /**
  * Provider Status Interface
@@ -574,7 +607,7 @@ export interface CursorValidationResult {
 /**
  * Configuration Schema Interface
  *
- * Simplified configuration schema for the OpenChoreo incremental provider
+ * configuration schema for the OpenChoreo incremental provider
  */
 export interface OpenChoreoIncrementalConfig {
   /**
