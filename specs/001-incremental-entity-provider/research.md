@@ -11,10 +11,10 @@ This document consolidates technical research findings for implementing the Open
 
 ## 1. OpenChoreo API Pagination Research
 
-### Decision: Hybrid Pagination Approach
+### Decision: Native Pagination Implementation
 - **Current State**: OpenChoreo API does not support native pagination
-- **Future State**: API pagination support is planned but timeline is undefined
-- **Implementation**: Implement hybrid approach with fallback mechanism
+- **Future State**: We will implement native pagination support in the OpenChoreo API
+- **Implementation**: Implement native API pagination with cursor-based tracking
 
 ### Rationale
 The OpenChoreo API currently provides three main endpoints:
@@ -22,10 +22,16 @@ The OpenChoreo API currently provides three main endpoints:
 - `getAllProjects(orgName)`: Returns all projects for a specific organization
 - `getAllComponents(orgName, projectName)`: Returns all components for a specific project
 
-Given the lack of native pagination support, we need to implement a cursor-based simulation approach that can:
-1. Work with the current API structure
-2. Seamlessly transition to native pagination when available
-3. Provide stateful progress tracking across ingestion cycles
+We will create new paginated API methods:
+- `getOrganizationsPaginated(cursor?, limit?)`: Paginated organization endpoint
+- `getProjectsPaginated(orgName, cursor?, limit?)`: Paginated project endpoint
+- `getComponentsPaginated(orgName, projectName, cursor?, limit?)`: Paginated component endpoint
+
+This approach:
+1. Provides true incremental processing without memory overhead
+2. Eliminates the need for complex fallback mechanisms
+3. Simplifies cursor management and state tracking
+4. Aligns with Backstage incremental provider best practices
 
 ### Alternatives Considered
 1. **Full Ingestion Only**: Continue using the current full mutation approach
@@ -33,16 +39,16 @@ Given the lack of native pagination support, we need to implement a cursor-based
    - **Rejected**: Not scalable for 1000+ entities
    - **Rejected**: High memory usage and processing pressure
 
-2. **Client-Side Pagination**: Load all entities but process in batches
+2. **Hybrid Approach with Fallback**: Implement fallback mechanism for non-paginated API
+   - **Rejected**: Removed based on user feedback
+   - **Rejected**: Adds unnecessary complexity
    - **Rejected**: Still requires loading all entities into memory
-   - **Rejected**: Defeats the purpose of incremental processing
-   - **Rejected**: No actual memory efficiency improvement
 
-3. **Hybrid Approach with Fallback (Selected)**:
-   - **Advantages**: Works with current API, prepared for future pagination
-   - **Advantages**: True incremental processing with memory efficiency
-   - **Advantages**: Backward compatibility maintained
-   - **Advantages**: Configurable pagination strategy
+3. **Native Pagination Implementation (Selected)**:
+   - **Advantages**: True incremental processing with no memory overhead
+   - **Advantages**: Simplified implementation and maintenance
+   - **Advantages**: Better performance and scalability
+   - **Advantages**: Aligns with modern API design principles
 
 ---
 
@@ -90,10 +96,10 @@ Key requirements identified:
 
 ## 3. JSON Serialization Strategy for Cursor Data
 
-### Decision: Structured JSON Schema with Validation
+### Decision: Simplified JSON Schema with Essential State
 - **Schema Versioning**: Include version field for backward compatibility
-- **Size Limitation**: Implement cursor size limits (recommended: 4KB max)
-- **Validation**: Runtime validation of cursor structure and data integrity
+- **Size Limitation**: Implement cursor size limits (recommended: 1KB max)
+- **Validation**: Runtime validation of essential cursor structure
 
 ### Rationale
 Cursor data must be JSON-serializable for database storage in the Backstage catalog. The research indicates need for:
@@ -101,24 +107,20 @@ Cursor data must be JSON-serializable for database storage in the Backstage cata
 ```typescript
 interface OpenChoreoCursor {
   version: '1.0';
-  lastOrganizationId?: string;
-  lastProjectId?: string;
-  lastComponentId?: string;
   lastProcessedTimestamp: string;
-  batchIndex: number;
-  paginationState: {
-    currentOrgIndex: number;
-    currentProjectIndex: number;
-    currentComponentIndex: number;
+  entityIds: {
+    lastOrganizationId?: string;
+    lastProjectId?: string;
+    lastComponentId?: string;
   };
 }
 ```
 
 Key considerations:
 1. **Versioning**: Essential for future cursor structure changes
-2. **Size Management**: Large cursors impact database performance
-3. **Data Integrity**: Validation prevents corrupted cursor state
-4. **Recovery**: Include sufficient state for failure recovery
+2. **Size Management**: Keep cursors small for optimal database performance
+3. **Simplicity**: Focus on essential state information only
+4. **Reliability**: Ensure cursor can be validated and reconstructed reliably
 
 ### Alternatives Considered
 1. **Simple String Cursors**: Single string identifiers
@@ -240,39 +242,35 @@ Optimization strategies:
 
 ## 6. Configuration Schema Design
 
-### Decision: Hierarchical Configuration with Validation
+### Decision: Simplified Configuration with Essential Options
 - **Schema**: TypeScript interfaces with runtime validation
-- **Defaults**: Sensible defaults for all configuration options
-- **Validation**: Comprehensive validation with clear error messages
+- **Defaults**: Sensible defaults for essential configuration options
+- **Validation**: Basic validation with clear error messages
 
 ### Rationale
-Configuration must be comprehensive yet easy to understand:
+Configuration must be simple and easy to understand:
 
 ```typescript
 interface OpenChoreoIncrementalConfig {
   baseUrl: string;
   token: string;
-  incremental: {
+  provider?: {
+    type: 'traditional' | 'incremental';
+  };
+  incremental?: {
     enabled: boolean;
-    burstLength: number;
-    burstInterval: number;
-    restLength: number;
-    fallback: {
-      enabled: boolean;
-      batchSize: number;
-    };
-    backoff: number[];
-    rejectRemovalsAbovePercentage: number;
-    rejectEmptySourceCollections: boolean;
+    batchSize: number;
+    interval: string;
+    timeout: string;
   };
 }
 ```
 
 Key configuration aspects:
-1. **Backward Compatibility**: Existing OpenChoreo configuration still works
-2. **Incremental Features**: New configuration section for incremental features
-3. **Validation**: Prevent invalid configurations at startup
-4. **Documentation**: Self-documenting schema
+1. **Simplicity**: Focus on essential configuration options only
+2. **Provider Selection**: Allow users to choose between traditional and incremental providers
+3. **Basic Validation**: Validate essential configuration parameters
+4. **Documentation**: Clear and concise configuration documentation
 
 ### Alternatives Considered
 1. **Flat Configuration**: All options at root level
@@ -397,13 +395,13 @@ Monitoring aspects:
 
 All NEEDS CLARIFICATION items from the feature specification have been resolved through technical research:
 
-1. **OpenChoreo API Pagination**: Hybrid approach with fallback mechanism
+1. **OpenChoreo API Pagination**: Native pagination implementation with new paginated API methods
 2. **Backstage Integration**: Use `@backstage/plugin-catalog-backend-module-incremental-ingestion`
-3. **JSON Serialization**: Structured JSON schema with validation
+3. **JSON Serialization**: Simplified JSON schema with essential state information only
 4. **Error Handling**: Exponential backoff with circuit breaker
-5. **Performance**: Multi-level caching and batch processing
-6. **Configuration**: Hierarchical schema with validation
-7. **Testing**: Multi-layered testing approach
+5. **Performance**: Basic batch processing with configurable batch sizes
+6. **Configuration**: Simplified configuration with essential options only
+7. **Testing**: Basic testing approach focusing on core functionality
 8. **Monitoring**: Integrated observability with Backstage
 
-These decisions provide a solid foundation for implementing the OpenChoreo Incremental Entity Provider while meeting all functional requirements and technical constraints.
+These decisions provide a solid foundation for implementing the OpenChoreo Incremental Entity Provider while meeting all functional requirements and technical constraints. The approach has been simplified based on user feedback to focus on core functionality first, with advanced features to be added in future iterations.

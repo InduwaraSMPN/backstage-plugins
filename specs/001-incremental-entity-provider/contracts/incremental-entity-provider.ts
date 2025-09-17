@@ -22,7 +22,7 @@ import {
 /**
  * OpenChoreo Specific Cursor Interface
  * 
- * Defines the cursor structure for tracking pagination state across ingestions
+ * Defines the simplified cursor structure for tracking pagination state across ingestions
  */
 export interface OpenChoreoCursor {
   /**
@@ -36,31 +36,6 @@ export interface OpenChoreoCursor {
   lastProcessedTimestamp: string;
   
   /**
-   * Current batch index for fallback pagination
-   */
-  batchIndex: number;
-  
-  /**
-   * Hierarchical pagination state
-   */
-  paginationState: {
-    /**
-     * Index of last processed organization
-     */
-    currentOrgIndex: number;
-    
-    /**
-     * Index of last processed project within organization
-     */
-    currentProjectIndex: number;
-    
-    /**
-     * Index of last processed component within project
-     */
-    currentComponentIndex: number;
-  };
-  
-  /**
    * Entity identifiers for resume capability
    */
   entityIds: {
@@ -68,32 +43,12 @@ export interface OpenChoreoCursor {
     lastProjectId?: string;
     lastComponentId?: string;
   };
-  
-  /**
-   * Processing state tracking
-   */
-  processingState: {
-    totalOrganizationsProcessed: number;
-    totalProjectsProcessed: number;
-    totalComponentsProcessed: number;
-    ingestionCycleId: string;
-  };
-  
-  /**
-   * Optional metadata for debugging
-   */
-  metadata?: {
-    createdAt: string;
-    updatedAt: string;
-    processingStartTime: string;
-    errorCount: number;
-  };
 }
 
 /**
  * OpenChoreo Context for Stateless Client Construction
  * 
- * Contains all necessary configuration and authentication details
+ * Contains essential configuration and authentication details
  * for reconstructing API clients per iteration
  */
 export interface OpenChoreoContext {
@@ -110,42 +65,11 @@ export interface OpenChoreoContext {
   /**
    * Configuration for incremental processing
    */
-  incrementalConfig: {
+  incrementalConfig?: {
     enabled: boolean;
-    burstLength: number;
-    burstInterval: number;
-    restLength: number;
-  };
-  
-  /**
-   * Pagination configuration
-   */
-  paginationConfig: {
-    batchSize: {
-      organizations: number;
-      projects: number;
-      components: number;
-    };
-    fallbackEnabled: boolean;
-    maxConcurrentRequests: number;
-  };
-  
-  /**
-   * Error handling configuration
-   */
-  errorHandlingConfig: {
-    retryIntervals: number[];
-    maxRetryAttempts: number;
-    circuitBreakerThreshold: number;
-  };
-  
-  /**
-   * Entity processing configuration
-   */
-  processingConfig: {
-    rejectRemovalsAbovePercentage: number;
-    rejectEmptySourceCollections: boolean;
-    enableMarkAndSweep: boolean;
+    batchSize: number;
+    interval: string;
+    timeout: string;
   };
 }
 
@@ -510,7 +434,7 @@ export interface OpenChoreoApiClient {
   getOrganizations(): Promise<OpenChoreoRawEntity[]>;
   
   /**
-   * Get organizations with pagination (if supported)
+   * Get organizations with pagination
    */
   getOrganizationsPaginated(
     cursor?: string,
@@ -527,7 +451,7 @@ export interface OpenChoreoApiClient {
   getProjects(organizationId: string): Promise<OpenChoreoRawEntity[]>;
   
   /**
-   * Get projects for an organization with pagination (if supported)
+   * Get projects for an organization with pagination
    */
   getProjectsPaginated(
     organizationId: string,
@@ -545,7 +469,7 @@ export interface OpenChoreoApiClient {
   getComponents(organizationId: string, projectId: string): Promise<OpenChoreoRawEntity[]>;
   
   /**
-   * Get components for a project with pagination (if supported)
+   * Get components for a project with pagination
    */
   getComponentsPaginated(
     organizationId: string,
@@ -562,15 +486,6 @@ export interface OpenChoreoApiClient {
    * Test API connectivity
    */
   testConnection(): Promise<boolean>;
-  
-  /**
-   * Get API version and capabilities
-   */
-  getApiInfo(): Promise<{
-    version: string;
-    supportsPagination: boolean;
-    maxLimit?: number;
-  }>;
 }
 
 /**
@@ -658,7 +573,7 @@ export interface CursorValidationResult {
 /**
  * Configuration Schema Interface
  * 
- * Configuration schema for the OpenChoreo incremental provider
+ * Simplified configuration schema for the OpenChoreo incremental provider
  */
 export interface OpenChoreoIncrementalConfig {
   /**
@@ -672,37 +587,20 @@ export interface OpenChoreoIncrementalConfig {
   token: string;
   
   /**
-   * Schedule configuration for provider execution
+   * Provider type selection
    */
-  schedule?: {
-    frequency: string;
-    timeout?: number;
-    initialDelay?: number;
+  provider?: {
+    type: 'traditional' | 'incremental';
   };
   
   /**
    * Incremental processing configuration
    */
-  incremental: {
+  incremental?: {
     enabled: boolean;
-    burstLength: number;
-    burstInterval: number;
-    restLength: number;
-    fallback: {
-      enabled: boolean;
-      batchSize: number;
-    };
-    backoff: number[];
-    rejectRemovalsAbovePercentage: number;
-    rejectEmptySourceCollections: boolean;
-  };
-  
-  /**
-   * Listener configuration
-   */
-  listener?: {
-    enabled?: boolean;
-    topics?: string[];
+    batchSize: number;
+    interval: string;
+    timeout: string;
   };
 }
 

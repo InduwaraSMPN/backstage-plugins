@@ -72,31 +72,6 @@ interface OpenChoreoCursor {
   lastProcessedTimestamp: string;
   
   /**
-   * Current batch index for fallback pagination
-   */
-  batchIndex: number;
-  
-  /**
-   * Hierarchical pagination state
-   */
-  paginationState: {
-    /**
-     * Index of last processed organization
-     */
-    currentOrgIndex: number;
-    
-    /**
-     * Index of last processed project within organization
-     */
-    currentProjectIndex: number;
-    
-    /**
-     * Index of last processed component within project
-     */
-    currentComponentIndex: number;
-  };
-  
-  /**
    * Entity identifiers for resume capability
    */
   entityIds: {
@@ -104,36 +79,13 @@ interface OpenChoreoCursor {
     lastProjectId?: string;
     lastComponentId?: string;
   };
-  
-  /**
-   * Processing state tracking
-   */
-  processingState: {
-    totalOrganizationsProcessed: number;
-    totalProjectsProcessed: number;
-    totalComponentsProcessed: number;
-    ingestionCycleId: string;
-  };
-  
-  /**
-   * Optional metadata for debugging
-   */
-  metadata?: {
-    createdAt: string;
-    updatedAt: string;
-    processingStartTime: string;
-    errorCount: number;
-  };
 }
 ```
 
 **Validation Rules**:
 - `version` must be exactly '1.0'
 - `lastProcessedTimestamp` must be a valid ISO 8601 timestamp
-- `batchIndex` must be ≥ 0
-- All indices in `paginationState` must be ≥ 0
-- `ingestionCycleId` must be a valid UUID
-- Total cursor size must be < 4KB when serialized
+- At least one of `lastOrganizationId`, `lastProjectId`, or `lastComponentId` must be provided
 
 ---
 
@@ -224,93 +176,38 @@ interface OpenChoreoIncrementalConfig {
   token: string;
   
   /**
-   * Schedule configuration for provider execution
+   * Provider type selection
    */
-  schedule?: {
+  provider?: {
     /**
-     * CRON expression for execution schedule
+     * Type of provider to use
      */
-    frequency: string;
-    
-    /**
-     * Timeout for execution in seconds
-     */
-    timeout?: number;
-    
-    /**
-     * Initial delay in seconds
-     */
-    initialDelay?: number;
+    type: 'traditional' | 'incremental';
   };
   
   /**
    * Incremental processing configuration
    */
-  incremental: {
+  incremental?: {
     /**
      * Enable incremental processing mode
      */
     enabled: boolean;
     
     /**
-     * Duration of each processing burst in seconds
+     * Batch size for processing entities
      */
-    burstLength: number;
+    batchSize: number;
     
     /**
-     * Interval between bursts in seconds
+     * Interval between processing cycles
      */
-    burstInterval: number;
+    interval: string;
     
     /**
-     * Rest period between complete ingestion cycles in seconds
+     * Timeout for processing operations
      */
-    restLength: number;
-    
-    /**
-     * Fallback pagination for non-paginated APIs
-     */
-    fallback: {
-      /**
-       * Enable fallback pagination mode
-       */
-      enabled: boolean;
-      
-      /**
-       * Batch size for fallback processing
-       */
-      batchSize: number;
-    };
-    
-    /**
-     * Exponential backoff intervals in seconds
-     */
-    backoff: number[];
-    
-    /**
-     * Maximum percentage of entities that can be removed
-     */
-    rejectRemovalsAbovePercentage: number;
-    
-    /**
-     * Reject empty source collections
-     */
-    rejectEmptySourceCollections: boolean;
-  };
-  
-  /**
-   * Listener configuration for entity processing
-   */
-  listener?: {
-    /**
-     * Enable entity processing listener
-     */
-    enabled?: boolean;
-    
-    /**
-     * Topics to listen for changes
-     */
-    topics?: string[];
+    timeout: string;
   };
 }
 ```
@@ -318,11 +215,9 @@ interface OpenChoreoIncrementalConfig {
 **Validation Rules**:
 - `baseUrl` must be a valid HTTPS URL (production) or HTTP URL (development)
 - `token` must be a non-empty string with minimum length of 16
-- `schedule.frequency` must be a valid CRON expression if provided
-- `incremental.enabled` is typically true but can be false for backward compatibility
-- All time intervals must be positive numbers
-- `incremental.backoff` must contain at least one interval
-- Percentages must be between 0 and 100
+- `provider.type` must be either 'traditional' or 'incremental' if provided
+- `incremental.batchSize` must be a positive number if provided
+- `incremental.interval` and `incremental.timeout` must be valid time strings if provided
 
 ---
 

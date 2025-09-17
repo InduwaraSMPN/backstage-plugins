@@ -1,7 +1,7 @@
 /**
  * Cursor Management Contract
  * 
- * This contract defines the interface for cursor management in the OpenChoreo
+ * This contract defines the simplified interface for cursor management in the OpenChoreo
  * Incremental Entity Provider, including creation, validation, serialization,
  * and persistence of cursor data.
  * 
@@ -14,6 +14,12 @@ import {
   OpenChoreoCursor,
   CursorValidationResult,
 } from './incremental-entity-provider';
+
+/**
+ * Note: This contract has been simplified to focus on essential functionality.
+ * Advanced features like cursor backup, recovery, and comprehensive metrics
+ * have been removed for the initial implementation.
+ */
 
 /**
  * Cursor Events Interface
@@ -92,7 +98,7 @@ export interface CursorError {
 /**
  * Cursor Manager Configuration Interface
  * 
- * Configuration for the cursor manager behavior
+ * Simplified configuration for the cursor manager behavior
  */
 export interface CursorManagerConfig {
   /**
@@ -104,36 +110,6 @@ export interface CursorManagerConfig {
    * Cursor expiration time in seconds
    */
   cursorExpiration?: number;
-  
-  /**
-   * Enable cursor compression
-   */
-  enableCompression?: boolean;
-  
-  /**
-   * Enable cursor encryption
-   */
-  enableEncryption?: boolean;
-  
-  /**
-   * Encryption key (if encryption is enabled)
-   */
-  encryptionKey?: string;
-  
-  /**
-   * Enable cursor backup
-   */
-  enableBackup?: boolean;
-  
-  /**
-   * Backup interval in seconds
-   */
-  backupInterval?: number;
-  
-  /**
-   * Maximum number of backups to keep
-   */
-  maxBackupCount?: number;
 }
 
 /**

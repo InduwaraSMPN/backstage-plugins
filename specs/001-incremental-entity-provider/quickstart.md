@@ -106,24 +106,13 @@ catalog:
     openchoreo:
       baseUrl: ${OPENCHOREO_API_URL}
       token: ${OPENCHOREO_TOKEN}
-      schedule:
-        frequency: '0 */30 * * * *'  # Every 30 minutes
-        timeout: 300                  # 5 minutes timeout
+      provider:
+        type: incremental  # 'traditional' | 'incremental'
       incremental:
         enabled: true
-        burstLength: 3                # 3 seconds per burst
-        burstInterval: 3              # 3 seconds between bursts
-        restLength: 86400             # 24 hours between cycles
-        fallback:
-          enabled: true
-          batchSize: 100              # 100 entities per batch
-        backoff:                      # Exponential backoff intervals
-          - 5                         # 5 seconds
-          - 30                        # 30 seconds
-          - 600                       # 10 minutes
-          - 10800                     # 3 hours
-        rejectRemovalsAbovePercentage: 5
-        rejectEmptySourceCollections: true
+        batchSize: 100
+        interval: 30s
+        timeout: 300s
 ```
 
 ### 2.3 Environment Variables
@@ -135,6 +124,8 @@ Set the required environment variables:
 OPENCHOREO_API_URL=https://api.openchoreo.example.com
 OPENCHOREO_TOKEN=your-api-token-here
 ```
+
+**Note**: The configuration has been simplified to essential options only. Advanced options like encryption, compression, and complex fallback mechanisms have been removed for the initial implementation.
 
 ### 2.4 Database Configuration
 
@@ -257,8 +248,13 @@ catalog:
     openchoreo:
       baseUrl: ${OPENCHOREO_API_URL}
       token: ${OPENCHOREO_TOKEN}
+      provider:
+        type: incremental
       incremental:
         enabled: true
+        batchSize: 100
+        interval: 30s
+        timeout: 300s
 ```
 
 **Production Configuration:**
@@ -268,45 +264,13 @@ catalog:
     openchoreo:
       baseUrl: ${OPENCHOREO_API_URL}
       token: ${OPENCHOREO_TOKEN}
-      schedule:
-        frequency: '0 */30 * * * *'
-        timeout: 300
+      provider:
+        type: incremental
       incremental:
         enabled: true
-        burstLength: 3
-        burstInterval: 3
-        restLength: 86400
-        fallback:
-          enabled: true
-          batchSize: 100
-        backoff: [5, 30, 600, 10800]
-        rejectRemovalsAbovePercentage: 5
-        rejectEmptySourceCollections: true
-```
-
-### 5.2 Advanced Configuration
-
-**High-Performance Configuration:**
-```yaml
-catalog:
-  providers:
-    openchoreo:
-      baseUrl: ${OPENCHOREO_API_URL}
-      token: ${OPENCHOREO_TOKEN}
-      schedule:
-        frequency: '0 */15 * * * *'  # Every 15 minutes
-        timeout: 600                  # 10 minutes
-      incremental:
-        enabled: true
-        burstLength: 10               # 10 seconds per burst
-        burstInterval: 2              # 2 seconds between bursts
-        restLength: 43200             # 12 hours between cycles
-        fallback:
-          enabled: true
-          batchSize: 200              # 200 entities per batch
-        backoff: [10, 60, 1200, 21600] # Faster backoff
-        rejectRemovalsAbovePercentage: 10
-        rejectEmptySourceCollections: false
+        batchSize: 200
+        interval: 15m
+        timeout: 600s
 ```
 
 **Development Configuration:**
@@ -316,21 +280,16 @@ catalog:
     openchoreo:
       baseUrl: ${OPENCHOREO_API_URL}
       token: ${OPENCHOREO_TOKEN}
-      schedule:
-        frequency: '*/5 * * * * *'    # Every 5 seconds
-        timeout: 30                   # 30 seconds timeout
+      provider:
+        type: incremental
       incremental:
         enabled: true
-        burstLength: 1                # 1 second per burst
-        burstInterval: 1              # 1 second between bursts
-        restLength: 60                # 1 minute between cycles
-        fallback:
-          enabled: true
-          batchSize: 10               # 10 entities per batch
-        backoff: [2, 5, 10]           # Short backoff intervals
-        rejectRemovalsAbovePercentage: 20
-        rejectEmptySourceCollections: false
+        batchSize: 10
+        interval: 5s
+        timeout: 30s
 ```
+
+**Note**: The configuration has been simplified to essential options only. Advanced options like encryption, compression, and complex fallback mechanisms have been removed for the initial implementation.
 
 ---
 

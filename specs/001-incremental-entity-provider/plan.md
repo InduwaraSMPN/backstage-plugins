@@ -71,30 +71,26 @@ specs/[001-incremental-entity-provider]/
 
 ### Source Code (repository root)
 ```
-catalog-backend-module-incremental-ingestion/
+plugins/catalog-incremental-ingestion-backend-module-openchoreo/
 ├── src/
 │   ├── index.ts                    # Main exports
 │   ├── module.ts                   # Backend module registration
 │   ├── provider/
 │   │   ├── OpenChoreoIncrementalEntityProvider.ts  # Main provider
-│   │   ├── CursorManager.ts        # Cursor management
-│   │   ├── EntityIterator.ts       # Entity processing
-│   │   ├── OpenChoreoApiClientContext.ts # Stateless API client
+│   │   ├── CursorManager.ts        # Simplified cursor management
+│   │   ├── EntityIterator.ts       # Entity processing and pagination
 │   │   └── types.ts                # Type definitions
 │   ├── config/
 │   │   ├── config.d.ts             # Configuration schema
 │   │   └── defaultConfig.ts        # Default values
-│   ├── util/
-│   │   ├── serialization.ts        # JSON serialization
-│   │   ├── errorHandling.ts        # Error handling
-│   │   └── validation.ts          # Validation
-│   └── testing/
-│       ├── mocks.ts                # Mock implementations
-│       ├── testUtils.ts            # Testing utilities
-│       └── fixtures.ts             # Test data
+│   └── util/
+│       ├── serialization.ts        # JSON serialization utilities
+│       └── errorHandling.ts        # Error handling and retry logic
 ├── package.json
 └── README.md
 ```
+
+**Note**: This is an additional module that will be built on top of the existing `catalog-backend-module-openchoreo` module. The `catalog-incremental-ingestion-backend-module-openchoreo` module will coexist with the traditional provider, allowing users to choose which provider to use based on their needs.
 
 **Structure Decision**: Single project structure (Option 1) - This is a backend module for the Backstage plugin system
 
@@ -149,6 +145,8 @@ catalog-backend-module-incremental-ingestion/
 
 **Output**: data-model.md, /contracts/*, failing tests, quickstart.md, CLAUDE.md
 
+**Note**: The design has been simplified to focus on core functionality. Advanced features like comprehensive testing, performance optimization, and complex migration tools will be added in future iterations based on real-world usage.
+
 ## Phase 2: Task Planning Approach
 *This section describes what the /tasks command will do - DO NOT execute during /plan*
 
@@ -156,18 +154,20 @@ catalog-backend-module-incremental-ingestion/
 - Load `.specify/templates/tasks-template.md` as base
 - Generate tasks from Phase 1 design docs (contracts, data model, quickstart)
 - Each contract → contract test task [P]
-- Each entity → model creation task [P] 
+- Each entity → model creation task [P]
 - Each user story → integration test task
 - Implementation tasks to make tests pass
 
 **Ordering Strategy**:
-- TDD order: Tests before implementation 
+- TDD order: Tests before implementation
 - Dependency order: Models before services before providers
 - Mark [P] for parallel execution (independent files)
 
-**Estimated Output**: 25-30 numbered, ordered tasks in tasks.md
+**Estimated Output**: 15-20 numbered, ordered tasks in tasks.md
 
 **IMPORTANT**: This phase is executed by the /tasks command, NOT by /plan
+
+**Note**: The task generation has been simplified to focus on core functionality. The reduced number of tasks reflects the removal of fallback pagination and simplification of configuration and cursor management.
 
 ## Phase 3+: Future Implementation
 *These phases are beyond the scope of the /plan command*
