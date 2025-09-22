@@ -28,6 +28,9 @@ jobs:
           cache: 'yarn'
           registry-url: 'https://npm.pkg.github.com'
 
+      - name: Authenticate with GitHub Packages
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
